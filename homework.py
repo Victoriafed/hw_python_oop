@@ -1,20 +1,16 @@
+from dataclasses import dataclass
 from typing import List, Dict
 
 
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float
-                 ) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
 
     def get_message(self) -> str:
         return (f'Тип тренировки: {self.training_type};'
@@ -49,7 +45,9 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError(
+            "Необходимо переопределить метод подсчета калорий"
+        )
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -147,11 +145,9 @@ def read_package(workout_type: str, data: List) -> Training:
         'SWM': Swimming
     }
 
-    if workout_type in workout_types:
-        traning = workout_types[workout_type](*data)
-        return traning
-    else:
-        return NameError('Неизвестный тип тренировки!')
+    if workout_type not in workout_types:
+        raise KeyError
+    return workout_types[workout_type](*data)
 
 
 def main(training: Training) -> None:
